@@ -1,0 +1,169 @@
+---
+title: "Quarto Homework"
+subtitle: Date 11-15-2024
+author: "Jordan Brophy"
+format: html
+editor: visual
+self-contained: true
+---
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+```
+
+### Question 1)
+
+```{r}
+myFunction <- function(x){
+  y <- (cos(4*x) + tan(0.5*x))^4
+  return(y)
+}
+
+ggplot() +
+  stat_function(
+    fun = myFunction,
+    xlim = c(0, 1),
+    n = 1000
+  ) +
+  theme_bw() +
+  labs(
+    x = "x",
+    y = "h(x)"
+  )
+```
+
+### Question 2)
+
+```{r}
+ggplot(diamonds, aes(x = carat, y = price, color = cut)) +
+  geom_point(alpha = 0.3) +
+  labs(title = "Carat vs Price by Cut Quality",
+       x = "Carat",
+       y = "Price ($)")
+```
+
+### Question 3)
+
+```{r}
+# Reading the File in
+tortilla_data <- read.csv("tortilla_data.csv")
+head(tortilla_data)
+```
+
+#a)
+
+```{r}
+# Filter data for the year 2007
+data_2007 <- tortilla_data %>% filter(year == 2007)
+
+# Calculate the average price across all 6 states
+avg_price_2007 <- mean(data_2007$price, na.rm = TRUE)
+avg_price_2007
+
+```
+
+#b)
+
+```{r}
+# Filter data for the year 2024
+data_2024 <- tortilla_data %>% filter(year == 2024)
+
+# Calculate the average price across all 6 states
+avg_price_2024 <- mean(data_2024$price, na.rm = TRUE)
+avg_price_2024
+
+```
+
+#c)
+
+```{r}
+# Calculate the percent change
+percent_change <- ((avg_price_2024 - avg_price_2007) / avg_price_2007) * 100
+percent_change
+
+```
+
+#d)
+
+```{r}
+# Calculate yearly averages across all states
+yearly_avg <- tortilla_data %>%
+  group_by(year) %>%
+  summarize(avg_price = mean(price, na.rm = TRUE))
+
+# Plot average prices over time
+ggplot(yearly_avg, aes(x = year, y = avg_price)) +
+  geom_line(color = "blue") +
+  geom_point(color = "red") +
+  labs(
+    title = "Average Tortilla Prices (2007-2024)",
+    x = "Year",
+    y = "Average Price (MXN)"
+  ) +
+  theme_minimal()
+
+```
+
+#e)
+
+```{r}
+# Filter data for 2016
+data_2016 <- tortilla_data %>% filter(year == 2016)
+
+# Calculate summary statistics by state
+summary_2016 <- data_2016 %>%
+  group_by(state) %>%
+  summarize(
+    mean_price = mean(price, na.rm = TRUE),
+    median_price = median(price, na.rm = TRUE),
+    sd_price = sd(price, na.rm = TRUE)
+  )
+
+# Create a table of averages
+kable(summary_2016, caption = "Summary Statistics of Tortilla Prices by State (2016)") %>%
+  kable_styling(bootstrap_options = "striped", full_width = FALSE)
+
+# Boxplot for tortilla prices by state in 2016
+ggplot(data_2016, aes(x = state, y = price)) +
+  geom_boxplot(fill = "skyblue") +
+  labs(
+    title = "Tortilla Prices by State (2016)",
+    caption = "Data source: Kaggle",
+    x = "State",
+    y = "Price (MXN)"
+  ) +
+  theme_minimal()
+
+```
+
+#f)
+
+```{r}
+# Filter data for Nuevo León
+nuevo_leon_data <- tortilla_data %>% filter(state == "NuevoLeon")
+
+# Plot prices by store type over time
+ggplot(nuevo_leon_data, aes(x = year, y = price, color = storeType)) +
+  geom_line() +
+  geom_point() +
+  labs(
+    title = "Tortilla Prices in Nuevo León by Store Type (2007-2024)",
+    caption = "Small businesses vs. large corporations",
+    x = "Year",
+    y = "Price (MXN)"
+  ) +
+  theme_minimal()
+
+```
+
+#g)
+
+[![from pngegg.com](burrito.jpeg)](https://www.pngegg.com/en/search?q=burrito)
+
+#h)[^1]
+
+[^1]: https://www.kaggle.com/datasets/richave/tortilla-prices-in-mexico
